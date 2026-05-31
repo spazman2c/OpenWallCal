@@ -1,0 +1,1 @@
+export default function Page() { return <div><h1 className="font-display text-6xl">Recipes</h1><p className="mt-3 max-w-2xl text-lg text-ink/65">Recipe box is scaffolded for the local MVP. The database table is ready; detailed recipe editing comes after the wall display loop feels useful.</p></div>; }

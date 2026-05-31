@@ -1,0 +1,1 @@
+export default function Page() { return <div><h1 className="font-display text-6xl">Settings</h1><p className="mt-3 max-w-2xl text-lg text-ink/65">Household settings are scaffolded. Timezone, integrations, weather, sleep mode, and display preferences belong here.</p></div>; }

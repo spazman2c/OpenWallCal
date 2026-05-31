@@ -1,0 +1,3 @@
+import Link from 'next/link';
+import { ApiForm } from '@/components/Forms';
+export default function SignupPage() { return <main className="appliance-bg grid min-h-screen place-items-center p-6"><div className="w-full max-w-md"><h1 className="mb-4 font-display text-5xl">Create your local home</h1><ApiForm endpoint="/api/auth/signup" redirectTo="/onboarding" submitLabel="Create account" fields={[{ name: 'name', label: 'Name', required: true }, { name: 'email', label: 'Email', type: 'email', required: true }, { name: 'password', label: 'Password', type: 'password', required: true }]} /><p className="mt-4 text-sm">Already set up? <Link className="font-bold" href="/login">Log in</Link></p></div></main>; }

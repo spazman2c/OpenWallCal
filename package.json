@@ -1,0 +1,42 @@
+{
+  "name": "open-wall-cal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:migrate": "set -a; . ./.env.local; set +a; psql \"$DATABASE_URL\" -f supabase/migrations/0001_local_mvp.sql",
+    "db:seed": "set -a; . ./.env.local; set +a; tsx scripts/seed.ts",
+    "supabase:start": "npx supabase@latest start",
+    "supabase:stop": "npx supabase@latest stop",
+    "supabase:status": "npx supabase@latest status",
+    "local:setup": "npm run docker:supabase:status && npm run db:migrate && npm run db:seed",
+    "local:reset": "npm run supabase:stop && npm run local:setup",
+    "docker:supabase:status": "docker ps --filter 'name=supabase_' --format 'table {{.Names}}\\t{{.Image}}\\t{{.Ports}}'",
+    "docker:supabase:logs": "docker logs --tail=120 supabase_db_StackSalad"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "latest",
+    "bcryptjs": "latest",
+    "date-fns": "latest",
+    "lucide-react": "latest",
+    "next": "latest",
+    "postgres": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "rrule": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@tailwindcss/postcss": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}

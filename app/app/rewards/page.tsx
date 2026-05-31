@@ -1,0 +1,1 @@
+export default function Page() { return <div><h1 className="font-display text-6xl">Rewards</h1><p className="mt-3 max-w-2xl text-lg text-ink/65">Stars and rewards are scaffolded for the local MVP. Star transactions are modeled so chores can award points next.</p></div>; }

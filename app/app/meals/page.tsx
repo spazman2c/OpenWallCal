@@ -1,0 +1,4 @@
+import { ApiForm } from '@/components/Forms';
+import { requireHousehold } from '@/lib/auth';
+import { sql } from '@/lib/db';
+export default async function MealsPage() { const s = await requireHousehold(); const meals = await sql<any[]>`select * from meals where household_id=${s.householdId} order by meal_date`; return <div><h1 className="font-display text-6xl">Meal planner</h1><div className="mt-6 grid gap-6 lg:grid-cols-[420px_1fr]"><ApiForm endpoint="/api/meals" submitLabel="Plan meal" fields={[{name:'title',label:'Meal',required:true},{name:'mealDate',label:'Date',type:'date',required:true},{name:'category',label:'Category',defaultValue:'Dinner'},{name:'notes',label:'Notes'}]} /><div className="grid gap-3">{meals.map(m => <div className="rounded-3xl bg-white/75 p-5 shadow-card" key={m.id}><b>{m.title}</b><div className="text-sm text-ink/60">{m.category} · {m.meal_date}</div></div>)}</div></div></div>; }

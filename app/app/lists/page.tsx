@@ -1,0 +1,4 @@
+import { ApiForm } from '@/components/Forms';
+import { requireHousehold } from '@/lib/auth';
+import { sql } from '@/lib/db';
+export default async function ListsPage() { const s = await requireHousehold(); const lists = await sql<any[]>`select * from lists where household_id=${s.householdId} order by created_at`; return <div><h1 className="font-display text-6xl">Lists</h1><div className="mt-6 grid gap-6 lg:grid-cols-[420px_1fr]"><ApiForm endpoint="/api/lists" submitLabel="Create list / add item" fields={[{name:'title',label:'List title',defaultValue:'Grocery',required:true},{name:'listType',label:'Type',defaultValue:'grocery'},{name:'itemName',label:'First item'}]} /><div className="grid gap-3">{lists.map(l => <div className="rounded-3xl bg-white/75 p-5 shadow-card" key={l.id}><b>{l.title}</b><div className="text-sm text-ink/60">{l.list_type}</div></div>)}</div></div></div>; }

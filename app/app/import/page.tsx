@@ -1,0 +1,1 @@
+export default function Page() { return <div><h1 className="font-display text-6xl">Import</h1><p className="mt-3 max-w-2xl text-lg text-ink/65">AI/manual import is intentionally parked until the local dashboard is useful. This will become the review-first import center for flyers, emails, PDFs, and recipes.</p></div>; }
