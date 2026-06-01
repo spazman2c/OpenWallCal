@@ -43,3 +43,24 @@ npm run docker:supabase:status
 ```
 
 If you want OpenWallCal to own its own separate Supabase CLI project later, stop the existing Supabase stack first or change ports in `supabase/config.toml` to avoid conflicts.
+
+## Future local file DB mode
+
+The product direction is local-first. Supabase/Postgres is currently the stable local backend, but the repo now includes an experimental PGlite file database path for the future no-Supabase default:
+
+```bash
+npm run local:file:setup
+npm run db:check:file
+```
+
+Default file path:
+
+```txt
+./data/openwallcal.db
+```
+
+The next architecture step is to switch `lib/db.ts` behind a small adapter so users can choose:
+
+- `local-file`: device-local DB file
+- `local-postgres`: Docker/Supabase Postgres
+- `cloud`: hosted sync later

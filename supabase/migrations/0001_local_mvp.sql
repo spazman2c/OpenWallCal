@@ -31,6 +31,18 @@ create table if not exists sessions_local (
   created_at timestamptz not null default now()
 );
 
+create table if not exists household_invites (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references households(id) on delete cascade,
+  invited_email text,
+  invited_name text,
+  role text not null default 'adult',
+  token text not null unique,
+  accepted_at timestamptz,
+  expires_at timestamptz not null default now() + interval '14 days',
+  created_at timestamptz not null default now()
+);
+
 create table if not exists profiles (
   id uuid primary key default gen_random_uuid(),
   household_id uuid not null references households(id) on delete cascade,
@@ -39,6 +51,8 @@ create table if not exists profiles (
   initials text not null,
   emoji text,
   type text not null default 'generic',
+  relationship text,
+  avatar_url text,
   archived_at timestamptz,
   created_at timestamptz not null default now()
 );
@@ -163,8 +177,80 @@ create table if not exists star_transactions (
   created_at timestamptz not null default now()
 );
 
+create table if not exists reward_catalog (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references households(id) on delete cascade,
+  title text not null,
+  description text,
+  star_cost integer not null default 0,
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists reward_redemptions (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references households(id) on delete cascade,
+  profile_id uuid not null references profiles(id) on delete cascade,
+  reward_id uuid references reward_catalog(id) on delete set null,
+  reward_title text not null,
+  star_cost integer not null,
+  status text not null default 'redeemed',
+  created_at timestamptz not null default now()
+);
+
+alter table profiles add column if not exists relationship text;
+alter table profiles add column if not exists avatar_url text;
+alter table households add column if not exists address_text text;
+alter table households add column if not exists weather_enabled boolean not null default true;
+alter table households add column if not exists temperature_unit text not null default 'F';
+alter table households add column if not exists updated_at timestamptz not null default now();
+alter table devices add column if not exists sleep_enabled boolean not null default false;
+alter table devices add column if not exists sleep_start time;
+alter table devices add column if not exists sleep_end time;
+alter table devices add column if not exists brightness integer not null default 100;
+alter table devices add column if not exists parental_lock_enabled boolean not null default false;
+alter table devices add column if not exists parental_lock_mode text not null default 'add_modify';
+alter table devices add column if not exists parental_lock_timeout_minutes integer not null default 5;
+alter table devices add column if not exists updated_at timestamptz not null default now();
+
+create table if not exists calendar_accounts (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references households(id) on delete cascade,
+  provider text not null default 'ics',
+  account_label text not null,
+  external_account_id text,
+  sync_mode text not null default 'one_way',
+  status text not null default 'active',
+  last_synced_at timestamptz,
+  last_error text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists calendars (
+  id uuid primary key default gen_random_uuid(),
+  household_id uuid not null references households(id) on delete cascade,
+  calendar_account_id uuid references calendar_accounts(id) on delete cascade,
+  provider text not null default 'local',
+  external_calendar_id text,
+  name text not null,
+  color text,
+  visible boolean not null default true,
+  profile_id uuid references profiles(id) on delete set null,
+  read_only boolean not null default false,
+  sync_token text,
+  ics_url text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists household_invites_token_idx on household_invites(token);
 create index if not exists events_household_starts_idx on events(household_id, starts_at);
 create index if not exists tasks_household_due_idx on task_series(household_id, due_date);
 create index if not exists list_items_household_idx on list_items(household_id, completed_at);
 create index if not exists meals_household_date_idx on meals(household_id, meal_date);
 create index if not exists devices_token_idx on devices(token_hash) where token_hash is not null;
+create index if not exists rewards_household_idx on reward_catalog(household_id, active);
+create index if not exists star_transactions_profile_idx on star_transactions(household_id, profile_id, created_at);
+create index if not exists calendar_accounts_household_idx on calendar_accounts(household_id, status);
+create index if not exists calendars_household_idx on calendars(household_id, provider, visible);

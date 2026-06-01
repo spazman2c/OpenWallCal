@@ -1,5 +1,12 @@
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/auth';
+import { isSetupAcknowledged } from '@/lib/setup';
 
-export default function HomePage() {
-  return <main className="appliance-bg min-h-screen p-6"><section className="mx-auto grid min-h-[calc(100vh-48px)] max-w-6xl place-items-center"><div className="rounded-[2rem] bg-white/70 p-8 shadow-card backdrop-blur md:p-12"><p className="mb-4 inline-flex rounded-full bg-butter/60 px-4 py-2 text-sm font-black text-ink">DIY wall calendar · local-first MVP</p><h1 className="font-display text-6xl leading-none md:text-8xl">HomeBoard Calendar</h1><p className="mt-6 max-w-2xl text-xl leading-8 text-ink/70">A warm, readable household command center for a 15.6-inch wall display, managed from phones and laptops, backed by your local Supabase/Postgres.</p><div className="mt-8 flex flex-wrap gap-3"><Link className="rounded-2xl bg-ink px-6 py-4 font-bold text-cream" href="/signup">Start local setup</Link><Link className="rounded-2xl bg-white px-6 py-4 font-bold text-ink" href="/display">Open display</Link></div></div></section></main>;
+export default async function HomePage() {
+  const setupComplete = await isSetupAcknowledged();
+  if (!setupComplete) redirect('/onboarding');
+
+  const session = await getSession();
+  if (session?.householdId) redirect('/app');
+  redirect('/login');
 }
